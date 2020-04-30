@@ -11,7 +11,7 @@ import { getAllProducts } from "../mongo/db";
 
 export default class Home extends React.Component {
   // test = () => {
-  //   Stitch.initializeDefaultAppClient("kalash-order-app-fxkwd").then((client) => {
+  //   Stitch.initializeDefaultAppClient("").then((client) => {
   //     this.setState({ client })
   //     this.state.client.auth
   //       .loginWithCredential(new AnonymousCredential())
