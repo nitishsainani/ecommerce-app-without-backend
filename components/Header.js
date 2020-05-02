@@ -1,6 +1,6 @@
 import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
-import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
+import { TouchableOpacity, StyleSheet, Platform, Dimensions, View } from 'react-native';
 import { Button, Block, NavBar, Input, Text, theme } from 'galio-framework';
 
 import Icon from './Icon';
@@ -63,42 +63,48 @@ class Header extends React.Component {
     switch (title) {
       case 'Home':
         return ([
-          <ChatButton key='chat-home' navigation={navigation} isWhite={white} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
+          <BasketButton key='basket-home' navigation={navigation} isWhite={white} />
+        ]);
+      case 'Products':
+        return ([
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
           <BasketButton key='basket-home' navigation={navigation} isWhite={white} />
         ]);
       case 'Deals':
         return ([
-          <ChatButton key='chat-categories' navigation={navigation} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
           <BasketButton key='basket-categories' navigation={navigation} />
         ]);
       case 'Categories':
         return ([
-          <ChatButton key='chat-categories' navigation={navigation} isWhite={white} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
           <BasketButton key='basket-categories' navigation={navigation} isWhite={white} />
         ]);
       case 'Category':
         return ([
-          <ChatButton key='chat-deals' navigation={navigation} isWhite={white} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
           <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />
         ]);
       case 'Profile':
         return ([
-          <ChatButton key='chat-profile' navigation={navigation} isWhite={white} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
           <BasketButton key='basket-deals' navigation={navigation} isWhite={white} />
         ]);
       case 'Product':
         return ([
-          <SearchButton key='search-product' navigation={navigation} isWhite={white} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
           <BasketButton key='basket-product' navigation={navigation} isWhite={white} />
         ]);
       case 'Search':
         return ([
-          <ChatButton key='chat-search' navigation={navigation} isWhite={white} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
           <BasketButton key='basket-search' navigation={navigation} isWhite={white} />
         ]);
       case 'Settings':
         return ([
-          <ChatButton key='chat-search' navigation={navigation} isWhite={white} />,
+          <Block style={[styles.button, {marginRight: 0, paddingRight: 0}]}><Text>Cart</Text></Block>,
+          // <ChatButton key='chat-search' navigation={navigation} isWhite={white} />,
           <BasketButton key='basket-search' navigation={navigation} isWhite={white} />
         ]);
       default:
@@ -108,37 +114,39 @@ class Header extends React.Component {
 
   renderSearch = () => {
     const { navigation } = this.props;
+    return;
     return (
       <Input
         right
         color="black"
         style={styles.search}
         placeholder="What are you looking for?"
-        onFocus={() => navigation.navigate('Pro')}
+        // onFocus={() => navigation.navigate('Pro')}
         iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="magnifying-glass" family="entypo" />}
       />
     )
   }
 
   renderTabs = () => {
-    const { navigation, tabTitleLeft, tabTitleRight } = this.props;
-
-    return (
-      <Block row style={styles.tabs}>
-        <Button shadowless style={[styles.tab, styles.divider]} onPress={() => navigation.navigate('Pro')}>
-          <Block row middle>
-            <Icon name="grid" family="feather" style={{ paddingRight: 8 }} />
-            <Text size={16} style={styles.tabTitle}>{tabTitleLeft || 'Categories'}</Text>
-          </Block>
-        </Button>
-        <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Pro')}>
-          <Block row middle>
-            <Icon size={16} name="camera-18" family="GalioExtra" style={{ paddingRight: 8 }} />
-            <Text size={16} style={styles.tabTitle}>{tabTitleRight || 'Best Deals'}</Text>
-          </Block>
-        </Button>
-      </Block>
-    )
+    const { navigation, tabTitleLeft, tabTitleRight, white, title, } = this.props;
+    if (title != 'Products') {
+      return (
+        <Block row style={styles.tabs}>
+          <Button shadowless style={[styles.tab, styles.divider]} onPress={() => {global.product_navigation_param = {title:'top_selling'};navigation.navigate('Products');}}>
+            <Block row middle>
+              <Icon name="grid" family="feather" style={{ paddingRight: 8 }} />
+              <Text size={16} style={styles.tabTitle}>{tabTitleLeft || 'Top Selling'}</Text>
+            </Block>
+          </Button>
+          <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Products')}>
+            <Block row middle>
+              <Icon size={16} name="camera-18" family="GalioExtra" style={{ paddingRight: 8 }} />
+              <Text size={16} style={styles.tabTitle}>{tabTitleRight || 'All Products'}</Text>
+            </Block>
+          </Button>
+        </Block>
+      )
+    } else return;
   }
 
   renderHeader = () => {
@@ -169,6 +177,7 @@ class Header extends React.Component {
           back={back}
           title={title}
           style={styles.navbar}
+          onRightPress={()=> navigation.navigate('Pro')}
           transparent={transparent}
           right={this.renderRight()}
           rightStyle={{ alignItems: 'center' }}

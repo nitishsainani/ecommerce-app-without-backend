@@ -4,8 +4,8 @@ const Products = {
   'Accessories': 'https://source.unsplash.com//l1MCA0VyNrk/840x840',
 };
 
-const Profile = 'https://images.unsplash.com/photo-1512529920731-e8abaea917a5?fit=crop&w=840&q=80';
-const Avatar = 'https://images.unsplash.com/photo-1518725522904-4b3939358342?fit=crop&w=210&q=80';
+const Profile = 'https://lh3.googleusercontent.com/NbRope000tSiR94UpxIo0dRHvpNkRAYPfRK87BoqvBPzid3xr4PBYm0vhLSzLrxZ7PAWfcwcN2y2h3HVHpkY9Aiyypx0=w1000';
+const Avatar = 'https://lh3.googleusercontent.com/NbRope000tSiR94UpxIo0dRHvpNkRAYPfRK87BoqvBPzid3xr4PBYm0vhLSzLrxZ7PAWfcwcN2y2h3HVHpkY9Aiyypx0=w1000';
 
 const Viewed = [
   'https://images.unsplash.com/photo-1508264443919-15a31e1d9c1a?fit=crop&w=240&q=80',

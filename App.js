@@ -1,16 +1,3 @@
-/*!
-
- =========================================================
- * Material Kit React Native - v1.4.0
- =========================================================
- * Product Page: https://demos.creative-tim.com/material-kit-react-native/
- * Copyright 2019 Creative Tim (http://www.creative-tim.com)
- * Licensed under MIT (https://github.com/creativetimofficial/material-kit-react-native/blob/master/LICENSE)
- =========================================================
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
 import React from 'react';
 import { Platform, StatusBar, Image } from 'react-native';
 import { Block, GalioProvider } from 'galio-framework';

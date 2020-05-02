@@ -1,0 +1,1 @@
+export const APP_ID = "kalash-order-app-fxkwd"

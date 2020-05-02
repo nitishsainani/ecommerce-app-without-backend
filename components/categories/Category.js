@@ -3,26 +3,40 @@ import { withNavigation } from '@react-navigation/compat';
 import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
 
-import materialTheme from '../constants/Theme';
+import materialTheme from '../../constants/Theme';
 
 const { width } = Dimensions.get('screen');
 
-class Product extends React.Component {
-  render() {
-    const { navigation, product, horizontal, full, style, priceColor, imageStyle } = this.props;
+class Category extends React.Component {
+  getImageObject = () => {
+    const { category, full, imageStyle } = this.props;
     const imageStyles = [styles.image, full ? styles.fullImage : styles.horizontalImage, imageStyle];
 
+    if (category.image != null && category.image != "") {
+      return <Image source={{ uri: category.image }} style={imageStyles} />;
+    } else {
+      return <Image source={require('../../assets/images/default_product.png')} style={imageStyles} />;
+    }
+  }
+
+  render() {
+    const { navigation, category, horizontal, style } = this.props;
     return (
       <Block row={horizontal} card flex style={[styles.product, styles.shadow, style]}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro', { product: product })}>
+        <TouchableWithoutFeedback onPress={() => {
+          global.product_navigation_param = category;
+          navigation.navigate('Products', { category });
+        }}>
           <Block flex style={[styles.imageContainer, styles.shadow]}>
-            <Image source={{ uri: product.image }} style={imageStyles} />
+            {this.getImageObject()}
           </Block>
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro', { product: product })}>
+        <TouchableWithoutFeedback onPress={() => {
+          global.product_navigation_param = category;
+          navigation.navigate('Products', { category });
+        }}>
           <Block flex space="between" style={styles.productDescription}>
-            <Text size={14} style={styles.productTitle}>{product.title}</Text>
-            <Text size={12} muted={!priceColor} color={priceColor}>${product.price}</Text>
+            <Text size={14} style={styles.productTitle}>{category.title}</Text>
           </Block>
         </TouchableWithoutFeedback>
       </Block>
@@ -30,7 +44,7 @@ class Product extends React.Component {
   }
 }
 
-export default withNavigation(Product);
+export default withNavigation(Category);
 
 const styles = StyleSheet.create({
   product: {
@@ -43,6 +57,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'wrap',
     paddingBottom: 6,
+    fontSize: 30,
+    textAlign: 'center',
   },
   productDescription: {
     padding: theme.SIZES.BASE / 2,
@@ -56,7 +72,7 @@ const styles = StyleSheet.create({
     marginTop: -16,
   },
   horizontalImage: {
-    height: 122,
+    height: 150,
     width: 'auto',
   },
   fullImage: {

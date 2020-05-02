@@ -5,14 +5,7 @@ import { Block, Text, theme } from "galio-framework";
 import Icon from "./Icon";
 import materialTheme from "../constants/Theme";
 
-const proScreens = [
-  "Woman",
-  "Man",
-  "Kids",
-  "New Collection",
-  "Sign In",
-  "Sign Up"
-];
+const proScreens = [];
 
 class DrawerItem extends React.Component {
   renderIcon = () => {
@@ -91,7 +84,7 @@ class DrawerItem extends React.Component {
             color={focused ? "white" : materialTheme.COLORS.MUTED}
           />
         );
-      case "Sign In":
+      case "Admin":
         return (
           <Icon
             size={16}

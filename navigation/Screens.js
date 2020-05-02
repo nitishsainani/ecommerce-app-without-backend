@@ -1,5 +1,5 @@
 import React from 'react';
-import { Easing, Animated, Dimensions } from 'react-native';
+import { Easing, Animated, Dimensions, Alert } from 'react-native';
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
@@ -9,8 +9,12 @@ import ComponentsScreen from '../screens/Components';
 import HomeScreen from '../screens/Home';
 import OnboardingScreen from '../screens/Onboarding';
 import ProfileScreen from '../screens/Profile';
-import ProScreen from '../screens/Pro';
+import Pro from '../screens/cart';
 import SettingsScreen from '../screens/Settings';
+import Products from '../screens/Products'
+
+import AdminMain from "../admin/screens/AdminMain";
+
 
 import CustomDrawerContent from './Menu';
 import { Icon, Header } from '../components';
@@ -23,10 +27,9 @@ const Drawer = createDrawerNavigator();
 
 const profile = {
   avatar: Images.Profile,
-  name: "Rachel Brown",
+  name: "Kalash Namkeen",
   type: "Seller",
-  plan: "Pro",
-  rating: 4.8
+  plan: "Basic Member"
 };
 
 function ProfileStack(props) {
@@ -107,6 +110,16 @@ function HomeStack(props) {
         }}
       />
       <Stack.Screen 
+        name="Products"
+        component={ProductsStack}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header back white transparent title="" navigation={navigation} scene={scene} />
+          ),
+          headerTransparent: true
+        }}
+      />
+      <Stack.Screen 
         name="Pro"
         component={ProScreen}
         options={{
@@ -119,6 +132,73 @@ function HomeStack(props) {
     </Stack.Navigator>
   );
 }
+
+function ProductsStack(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen 
+        name="Product"
+        component={Products}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header 
+              search
+              tabs
+              title="Products"
+              navigation={navigation}
+              scene={scene}
+            />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function ProScreen(props) {
+  return (
+    <Stack.Navigator mode="card" headerMode="screen">
+      <Stack.Screen 
+        name="Cart"
+        component={Pro}
+        options={{
+          header: ({ navigation, scene }) => (
+            <Header 
+              search
+              tabs
+              title="Cart"
+              navigation={navigation}
+              scene={scene}
+            />
+          )
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function AdminStack(props) {
+    return (
+        <Stack.Navigator mode="card" headerMode="screen">
+            <Stack.Screen
+                name="Admin"
+                component={AdminMain}
+                options={{
+                    header: ({ navigation, scene }) => (
+                        <Header
+                            search
+                            tabs
+                            title="Admin"
+                            navigation={navigation}
+                            scene={scene}
+                        />
+                    )
+                }}
+            />
+        </Stack.Navigator>
+    );
+}
+
 
 function AppStack(props) {
   return (
@@ -150,7 +230,7 @@ function AppStack(props) {
           fontWeight: "normal"
         }
       }}
-      initialRouteName="Home"
+      initialRouteName="Admin"
     >
       <Drawer.Screen
         name="Home"
@@ -168,7 +248,7 @@ function AppStack(props) {
       />
       <Drawer.Screen
         name="Woman"
-        component={ProScreen}
+        component={ProductsStack}
         options={{
           drawerIcon: ({ focused }) => (
             <Icon
@@ -268,8 +348,8 @@ function AppStack(props) {
         }}
       />
       <Drawer.Screen
-        name="Sign In"
-        component={ProScreen}
+        name="Admin"
+        component={AdminStack}
         options={{
           drawerIcon: ({ focused }) => (
             <Icon

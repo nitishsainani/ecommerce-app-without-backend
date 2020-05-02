@@ -18,13 +18,7 @@ function CustomDrawerContent({
   const insets = useSafeArea();
   const screens = [
     "Home",
-    "Woman",
-    "Man",
-    "Kids",
-    "New Collection",
     "Profile",
-    "Settings",
-    "Components"
   ];
   return (
     <Block
@@ -48,13 +42,6 @@ function CustomDrawerContent({
               {profile.plan}
             </Text>
           </Block>
-          <Text size={16} muted style={styles.seller}>
-            {profile.type}
-          </Text>
-          <Text size={16} color={materialTheme.COLORS.WARNING}>
-            {profile.rating}{" "}
-            <Icon name="shape-star" family="GalioExtra" size={14} />
-          </Text>
         </Block>
       </Block>
       <Block flex style={{ paddingLeft: 7, paddingRight: 14 }}>
@@ -74,7 +61,7 @@ function CustomDrawerContent({
                 title={item}
                 key={index}
                 navigation={navigation}
-                focused={state.index === index ? true : false}
+                focused={state.index === index}
               />
             );
           })}
@@ -82,14 +69,9 @@ function CustomDrawerContent({
       </Block>
       <Block flex={0.3} style={{ paddingLeft: 7, paddingRight: 14 }}>
         <DrawerCustomItem
-          title="Sign In"
+          title="Admin"
           navigation={navigation}
-          focused={state.index === 8 ? true : false}
-        />
-        <DrawerCustomItem
-          title="Sign Up"
-          navigation={navigation}
-          focused={state.index === 9 ? true : false}
+          focused={state.index === 8}
         />
       </Block>
     </Block>
@@ -127,7 +109,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     borderRadius: 4,
     height: 19,
-    width: 38,
+    width: 'auto',
   },
   seller: {
     marginRight: 16,

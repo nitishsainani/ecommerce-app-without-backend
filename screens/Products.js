@@ -2,49 +2,87 @@ import React from "react";
 import { StyleSheet, Dimensions, ScrollView, ActivityIndicator } from "react-native";
 import { Button, Block, Text, Input, theme } from "galio-framework";
 
-import { Icon, Product, Category } from "../components/";
+import { Icon, Product } from "../components";
 import { quote } from '../constants';
+
 const { width } = Dimensions.get("screen");
 import {
   getAllProducts,
   insertNewProduct,
   insertManyNewProduct,
-  getAllCategories,
 } from "../mongo/db";
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 
-export default class Home extends React.Component {
+export default class Products extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      categories: null,
+      items: null,
     };
   }
 
-  componentDidMount = () => {
-    setTimeout(() => {
-    getAllCategories().then(categories => {
+  setCategoryItems = (items, category) => {
+    if(!category) {
       this.setState({
-        categories
-      });
-    })}, 3000);
+        items,
+      })
+    ////////////FOR TOP SELLLING
+    } else if (category == 'top_selling'){
+      var newItems = [];
+      items.forEach((item) => {
+        if(item.priority == 10) {
+          newItems.push(item);
+        }
+      })
+      this.setState({
+        items: newItems,
+      })
+    /////////// FOR CATEGORY ITEMS
+    } else {
+      var newItems = [];
+      items.forEach((item) => {
+        if(item.category == category) {
+          newItems.push(item);
+        }
+      })
+      this.setState({
+        items: newItems,
+      })
+    }
+  }
+
+  componentDidMount = () => {
+    console.log(global.product_navigation_param);
+    
+    var category = global.product_navigation_param && global.product_navigation_param.title;
+    global.product_navigation_param = null;
+    var timeoutTime;
+    if(!category) {
+      timeoutTime = 200;
+    } else {
+      timeoutTime = 2000;
+    }
+    setTimeout(() => {
+    getAllProducts().then(items => this.setCategoryItems(items, category));
+    }, timeoutTime);
   };
 
   renderProductsNew = () => {
-    const { categories } = this.state;
-    if (categories) {
+    const { items } = this.state;
+    if (items) {
       return (
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.products}
         >
           <Block flex>
-            {categories.map((category, key) => {
+            {items.map((item, key) => {
               return (
-                <Category
-                  category={category}
+                <Product
+                  product={item}
                   key={key}
-                  full
+                  horizontal={item.full_size ? false : true}
+                  full={item.full_size ? true : false}
                 />
               );
             })}
@@ -55,7 +93,7 @@ export default class Home extends React.Component {
       return (
         <Block style={{justifyContent: "center", marginTop: 60}}>
           <ActivityIndicator  size="large" color="black" />
-          <Text style={{fontSize: 25, textAlign: 'center', }}>{quote()}</Text>
+          <Text style={{fontSize: 25, textAlign: 'center', padding: 20,}}>{quote()}</Text>
         </Block>
       );
     }

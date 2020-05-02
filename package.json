@@ -4,6 +4,7 @@
   "description": "Material Kit React Native. Coded by Creative Tim",
   "private": true,
   "scripts": {
+    "both": "react-native run-ios && react-native run-ios",
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -23,6 +24,7 @@
     "expo-font": "~8.0.0",
     "expo-linear-gradient": "~8.0.0",
     "galio-framework": "~0.6.3",
+    "mongodb-stitch-react-native-sdk": "^4.8.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "~0.61.4",
@@ -31,7 +33,8 @@
     "react-native-safe-area-context": "~0.7.3",
     "react-native-screens": "~2.0.0-beta.8",
     "react-native-unimodules": "~0.7.0",
-    "react-native-web": "~0.11.7"
+    "react-native-web": "~0.11.7",
+    "tcomb-form-native": "^0.6.20"
   },
   "devDependencies": {
     "@babel/core": "~7.6.0",
