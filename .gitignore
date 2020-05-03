@@ -58,5 +58,5 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 
-./mongo/credentials.js
+/mongo/credentials.js
 sendgrid.env
