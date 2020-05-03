@@ -1,1 +1,1 @@
-export const APP_ID = "kalash-order-app-fxkwd"
+export const APP_ID = "PLACE YOUR API KEY HERE"
