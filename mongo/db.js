@@ -9,7 +9,7 @@ import { CONSTANTS } from "../constants/database";
 
 ///////////////////////////
 /********************* */
-const TESTING = true
+const TESTING = false
 
 import {test_products, test_categories, test_content_values} from './test_data'
 /********************* */
