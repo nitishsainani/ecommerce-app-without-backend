@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, Dimensions, ScrollView, ActivityIndicator } from "react-native";
-import { Button, Block, Text, Input, theme } from "galio-framework";
+import { StyleSheet, Dimensions, ScrollView, ActivityIndicator, TextInput } from "react-native";
+import { Button, Block, Text, theme } from "galio-framework";
 
 import { Icon, Product, Category } from "../../components";
 import { quote } from '../../constants';
@@ -12,32 +12,48 @@ import {
   getAllCategories,
 } from "../../mongo/db";
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
+import ATabs from "../components/ATabs";
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      allow: false,
     };
-    this.screens = {
-
-    }
   }
 
-  getView = () => {
-
-  }
 
   componentDidMount = () => {
 
   };
 
-  render() {
-    return (
-      <Block flex center style={{}}>
+  handleChange = (text) => {
+    if(text === 'kalash@2670') {
+      this.setState({
+        allow: true,
+      });
+    }
+  }
 
-      </Block>
-    );
+  render() {
+    if(this.state.allow) {
+      return (<ATabs/>);
+    } else {
+      return (
+        <Block flex center style={{padding: 20, marginTop: 60}}>
+          <Text>Enter Password</Text>
+          <TextInput
+            style = {{backgroundColor:'white', marginTop: 20, padding:20, width:200, }}
+            underlineColorAndroid = "transparent"
+            placeholder = "Enter Password Here"
+            autoCapitalize = "none"
+            onChangeText = {this.handleChange}
+          />
+
+        </Block>
+      );
+    }
+
   }
 
 }
