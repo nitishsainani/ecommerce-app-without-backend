@@ -20,7 +20,7 @@ import {
 import { getImage } from "../../image/imagePick";
 
 
-export default class Product extends React.Component {
+export default class AProduct extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,7 +57,11 @@ export default class Product extends React.Component {
   changeImage = (res) => {
     let {product} = this.state;
     if (res) {
-      product.image = res.data.image.url;
+      if(res.data.medium !== null && res.data.medium !== undefined) {
+        product.image = res.data.medium.url;
+      } else {
+        product.image = res.data.image.url;
+      }
       this.setState({
         product,
       });
@@ -126,7 +130,7 @@ export default class Product extends React.Component {
               >
                 {categories.map((category, key) => {
                   return(
-                    <Picker.Item label={category.title} value={category.title}/>
+                    <Picker.Item key={key} label={category.title} value={category.title}/>
                   );
                 })}
               </Picker> :
@@ -136,7 +140,7 @@ export default class Product extends React.Component {
               trackColor={{ false: "#767577", true: "green" }}
               ios_backgroundColor="#3e3e3e"
               onValueChange={this.changeDisabled}
-              value={product.in_stock}
+              value={!product.in_stock}
             />
             <Button color={'green'} onPress={this.saveProduct}>SAVE</Button>
           </Block>

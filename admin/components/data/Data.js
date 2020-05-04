@@ -5,12 +5,9 @@ import { Button, Block, Text, Input, theme } from "galio-framework";
 import { Icon, Product, Category } from "../../../components";
 import { quote } from '../../../constants';
 const { width } = Dimensions.get("screen");
-import {
-  getAllProducts,
-  insertNewProduct,
-  insertManyNewProduct,
-  getAllCategories,
-} from "../../../mongo/db";
+
+import { test } from "../../Telegram";
+
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 import Items from "./items";
 import Categories from "./ACategories";
@@ -27,7 +24,7 @@ export default class Data extends React.Component {
   }
 
   componentDidMount = () => {
-
+    //test();
   };
 
   render() {

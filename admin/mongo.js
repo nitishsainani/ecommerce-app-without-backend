@@ -7,6 +7,35 @@ import {
 import { APP_ID } from "../mongo/credentials";
 import { CONSTANTS } from "../constants/database";
 
+////////TEST query
+
+export const test = () => {
+  console.log("TEST")
+  console.log("TEST")
+  console.log("TEST")
+  console.log("TEST")
+
+  const stitchAppClient = Stitch.defaultAppClient;
+  const mongoClient = stitchAppClient.getServiceClient(
+    RemoteMongoClient.factory,
+    CONSTANTS.FACTORY_NAME
+  );
+  const db = mongoClient.db(CONSTANTS.DB_NAME);
+
+  const itemsCollection = db.collection(CONSTANTS.TABLE.ITEMS);
+  const update = {
+    "$set": {'in_stock': true}
+  };
+  const options = { "upsert": false }
+  itemsCollection.updateMany({}, update, options)
+    .then(result => {
+      const { matchedCount, modifiedCount } = result;
+      console.log(`Successfully matched ${matchedCount} and modified ${modifiedCount} items.`)
+    })
+    .catch(err => console.error(`Failed to update items: ${err}`))
+}
+
+
 //////// UPDATING QUERIES
 export const updateCategory = (category) => {
   const stitchAppClient = Stitch.defaultAppClient;
@@ -58,6 +87,33 @@ export const updateProduct = (item) => {
 };
 
 /////// GETTING QUERIES
+
+export const getPendingOrders = async () => {
+  const stitchAppClient = Stitch.defaultAppClient;
+  const mongoClient = stitchAppClient.getServiceClient(
+    RemoteMongoClient.factory,
+    CONSTANTS.FACTORY_NAME
+  );
+  const db = mongoClient.db(CONSTANTS.DB_NAME);
+  const itemsCollection = db.collection(CONSTANTS.TABLE.ITEMS);
+
+  const options = {
+    "sort": { "date": -1 },
+  };
+  itemsCollection.findOne(query, options)
+    .then((result) => {
+      if (result) {
+        console.log(`Successfully found document: ${result}.`);
+      } else {
+        console.log('No document matches the provided query.');
+      }
+    })
+    .catch((err) => console.error(`Failed to find document: ${err}`));
+
+
+
+}
+
 export const getAllProducts = async () => {
   const stitchAppClient = Stitch.defaultAppClient;
   const mongoClient = stitchAppClient.getServiceClient(

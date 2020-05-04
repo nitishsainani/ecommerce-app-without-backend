@@ -109,7 +109,7 @@ function HomeStack(props) {
           )
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="Products"
         component={ProductsStack}
         options={{
@@ -119,7 +119,7 @@ function HomeStack(props) {
           headerTransparent: true
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="Pro"
         component={ProScreen}
         options={{
@@ -129,6 +129,7 @@ function HomeStack(props) {
           headerTransparent: true
         }}
       />
+      <Stack.Screen name="App" component={AppStack} />
     </Stack.Navigator>
   );
 }
@@ -230,7 +231,7 @@ function AppStack(props) {
           fontWeight: "normal"
         }
       }}
-      initialRouteName="Admin"
+      initialRouteName="Home"
     >
       <Drawer.Screen
         name="Home"

@@ -27,10 +27,10 @@ export default class Products extends React.Component {
         items,
       })
     ////////////FOR TOP SELLLING
-    } else if (category == 'top_selling'){
-      var newItems = [];
+    } else if (category === 'top_selling'){
+      let newItems = [];
       items.forEach((item) => {
-        if(item.priority == 10) {
+        if(item.show_priority === 10) {
           newItems.push(item);
         }
       })
@@ -125,13 +125,13 @@ const styles = StyleSheet.create({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.products}>
         <Block flex>
-          <Product product={products[0]} horizontal />
+          <ProductMain.js product={products[0]} horizontal />
           <Block flex row>
-            <Product product={products[1]} style={{ marginRight: theme.SIZES.BASE }} />
-            <Product product={products[2]} />
+            <ProductMain.js product={products[1]} style={{ marginRight: theme.SIZES.BASE }} />
+            <ProductMain.js product={products[2]} />
           </Block>
-          <Product product={products[3]} horizontal />
-          <Product product={products[4]} full />
+          <ProductMain.js product={products[3]} horizontal />
+          <ProductMain.js product={products[4]} full />
         </Block>
       </ScrollView>
     )

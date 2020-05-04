@@ -60,3 +60,4 @@ buck-out/
 
 /mongo/credentials.js
 sendgrid.env
+/android/gradle.properties

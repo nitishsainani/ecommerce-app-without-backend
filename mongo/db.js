@@ -1,17 +1,13 @@
-import {
-  Stitch,
-  AnonymousCredential,
-  RemoteMongoClient,
-} from "mongodb-stitch-react-native-sdk";
+import {AnonymousCredential, RemoteMongoClient, Stitch,} from "mongodb-stitch-react-native-sdk";
 
-import { APP_ID } from "./credentials";
-import { CONSTANTS } from "../constants/database";
+import {APP_ID} from "./credentials";
+import {CONSTANTS} from "../constants/database";
+import {test_categories, test_content_values, test_products} from './test_data'
 
 ///////////////////////////
 /********************* */
 const TESTING = false
 
-import {test_products, test_categories, test_content_values} from './test_data'
 /********************* */
 ///////////////////////////
 
@@ -23,7 +19,7 @@ export var data = {
 
 const _logIn = async () => {
   await Stitch.initializeDefaultAppClient(APP_ID).then((client) => {
-    client;
+    client
     client.auth
       .loginWithCredential(new AnonymousCredential())
       .then((user) => {
@@ -50,6 +46,23 @@ const _checkLogin = () => {
 
 
 /////// GETTING QUERIES
+export const getTable = async (tableName) => {
+  const stitchAppClient = Stitch.defaultAppClient;
+  const mongoClient = stitchAppClient.getServiceClient(
+    RemoteMongoClient.factory,
+    CONSTANTS.FACTORY_NAME
+  );
+  const db = mongoClient.db(CONSTANTS.DB_NAME);
+  const tasks = db.collection(tableName);
+  return await tasks.find().asArray()
+    .then((docs) => {
+      return docs
+    })
+    .catch((err) => {
+      console.warn(err);
+    });
+}
+
 export const getAllProducts = async () => {
   if (TESTING) return test_products
 
@@ -64,9 +77,16 @@ export const getAllProducts = async () => {
       );
       const db = mongoClient.db(CONSTANTS.DB_NAME);
       const tasks = db.collection(CONSTANTS.TABLE.ITEMS);
-      data.items = await tasks.find().asArray()
+      const query = {};
+      const options = {
+        "sort": { "in_stock": -1, "show_priority": -1 },
+      };
+      data.items = await tasks.find(query, options).asArray()
       .then((docs) => {
         return docs
+        for(let i=0; i<docs.length; ++i){
+          console.log(docs[i]);
+        }
       })
       .catch((err) => {
         console.warn(err);
@@ -78,7 +98,7 @@ export const getAllProducts = async () => {
 export const getAllCategories = async () => {
   if (TESTING) return test_categories
   if (!_checkLogin()) {
-    _logIn();
+    await _logIn();
   }
   if (data.categories == null) {
     const stitchAppClient = Stitch.defaultAppClient;
@@ -88,7 +108,11 @@ export const getAllCategories = async () => {
     );
     const db = mongoClient.db(CONSTANTS.DB_NAME);
     const tasks = db.collection(CONSTANTS.TABLE.CATEGORIES);
-    data.categories = await tasks.find().asArray()
+    const query = {};
+    const options = {
+      "sort": { "in_stock": -1, "show_priority": -1 },
+    };
+    data.categories = await tasks.find(query, options).asArray()
         .then((docs) => {
           return docs
         })

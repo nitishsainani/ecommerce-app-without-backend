@@ -46,6 +46,7 @@ export default class Items extends React.Component {
               );
             })}
           </Block>
+          <Block style={{height: 500}}/>
         </ScrollView>
       );
     } else {

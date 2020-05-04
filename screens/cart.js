@@ -19,6 +19,7 @@ import { Images, materialTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
 import { getMinOrderValue, insertOrder } from "../mongo/db";
 import t from "tcomb-form-native";
+import { sendMessage } from "../admin/Telegram";
 
 export default class Pro extends React.Component {
   constructor(props) {
@@ -29,6 +30,36 @@ export default class Pro extends React.Component {
       buttonText: "Next",
       addressState: false,
     };
+  }
+
+  generateOrderMessage = (values, items, totalPrice) => {
+    let OrderString = '';
+    OrderString += 'NEW ORDER GENERATED\n';
+    OrderString += '=====================\n';
+    OrderString += 'NAME: ' + values.name + '\n';
+    OrderString += 'PHONE: ' + values.phone + '\n';
+    OrderString += '=====================\n';
+    OrderString += 'ADDRESS: \n';
+    OrderString += values['Address Line 1'] + '\n';
+    OrderString += values['Address Line 2'] + '\n';
+    OrderString += 'Landmark: ' + values['Landmark'] + '\n';
+    OrderString += '=====================\n';
+    OrderString += 'ORDER SUMMARY\n\n';
+    let totalCount = 0;
+    for(let i=0; i<items.length; ++i) {
+      let item = items[i];
+      totalCount += item.count;
+      OrderString +=
+        item.title + '\n' +
+        item.price + '\t\t\tX\t\t\t' + item.count + '\t\t\t' + (item.count*item.price).toString() + '\n\n';
+    }
+    OrderString += '=====================\n';
+    OrderString += 'TOTAL COUNT OF ITEMS\n';
+    OrderString += totalCount + '\n';
+    OrderString += '=====================\n';
+    OrderString += 'TOTAL AMOUNT\n';
+    OrderString += totalPrice + '\n';
+    return OrderString;
   }
 
   validateValues = (values) => {
@@ -84,19 +115,19 @@ export default class Pro extends React.Component {
     if(values && this.validateValues(values)){
       console.log(values);
       Object.assign(order, values);
-      Object.assign(order, new Date());
+      Object.assign(order, {date: new Date()});
       Object.assign(order, {status: 'Pending'});
       Object.assign(order, {items: JSON.stringify(this.state.items)});
       insertOrder(order).then(res => {
         if(res) {
           Alert.alert(
             "SUCCESS",
-            "Order Places Successfully!",
+            "We thank you for shopping at KALASH!\nWe Look forward to serve you better.",
             [{ text: "Great", onPress: () => console.log("OK Pressed") }]
           );
-          emptyCart();
+          emptyCart().then(r => {});
+          sendMessage(this.generateOrderMessage(values, this.state.items, this.state.total)).then(r => {})
           this.props.navigation.navigate('Home');
-          return;
         } else {
           Alert.alert(
             "Failure",
@@ -201,9 +232,14 @@ export default class Pro extends React.Component {
     });
 
     return (
-      <Block flex style={{padding: 10}}>
-        <Form ref={(c) => (this._form = c)} type={model}/>
-      </Block>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.products}
+      >
+        <Block flex style={{padding: 10}}>
+          <Form ref={(c) => (this._form = c)} type={model}/>
+        </Block>
+      </ScrollView>
     );
   }
 

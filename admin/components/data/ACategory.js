@@ -51,7 +51,11 @@ export default class Category extends React.Component {
   changeImage = (res) => {
     let {category} = this.state;
     if (res) {
-      category.image = res.data.image.url;
+      if(res.data.medium !== null && res.data.medium !== undefined ) {
+        category.image = res.data.medium.url;
+      } else {
+        category.image = res.data.image.url;
+      }
       this.setState({
         category,
       });
@@ -106,7 +110,7 @@ export default class Category extends React.Component {
               trackColor={{ false: "#767577", true: "green" }}
               ios_backgroundColor="#3e3e3e"
               onValueChange={this.changeDisabled}
-              value={category.in_stock}
+              value={!category.in_stock}
             />
             <Button color={'green'} onPress={this.saveCategory}>SAVE</Button>
           </Block>

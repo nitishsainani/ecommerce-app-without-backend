@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, StatusBar, Dimensions, Platform } from 'react-native';
+import { Image, StyleSheet, StatusBar, Dimensions, Platform } from 'react-native';
 import { Block, Button, Text, theme } from 'galio-framework';
 
 const { height, width } = Dimensions.get('screen');
@@ -8,15 +8,16 @@ import materialTheme from '../constants/Theme';
 import Images from '../constants/Images';
 
 export default class Onboarding extends React.Component {
-  componentWillMount = () => {
-    this.props.navigation.navigate('App');
+  componentDidMount = () => {
+    setTimeout(()=>{
+      this.props.navigation.navigate('App');
+    }, 500);
   }
 
   render() {
-    const { navigation } = this.props;
-
     return (
-      <Block backgroundColor='white' flex style={styles.container}>
+      <Block flex style={[styles.container, {backgroundColor: 'white', alignItems: 'center'}]}>
+        <Image style={{marginTop:200}} source={require("../assets/images/default_product.png")} />
       </Block>
     );
   }

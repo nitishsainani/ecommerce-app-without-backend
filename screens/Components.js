@@ -296,6 +296,7 @@ export default class Components extends React.Component {
             {Images.Viewed.map((img, index) => (
               <Block key={`viewed-${img}`} style={styles.shadow}>
                 <Image
+                  key={key}
                   resizeMode="cover"
                   source={{ uri: img }}
                   style={styles.albumThumb}

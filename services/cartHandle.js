@@ -11,7 +11,6 @@ export const getCountFromCart = async (product) => {
   let cart = global.cart || [];
   let res = 0;
   cart.forEach((item) => {
-    console.log(item._id, product._id, item._id === product._id);
     if (item._id === product._id) {
       res = item.count;
     }
@@ -24,7 +23,6 @@ export const addProductToCart = async (product) => {
   let changed = false;
   let res = 0;
   for (let i = 0; i < cart.length; ++i) {
-    console.log(cart[i]._id, product._id, cart[i]._id === product._id);
     if (cart[i]._id === product._id) {
       cart[i].count += 1;
       changed = true;
@@ -37,7 +35,6 @@ export const addProductToCart = async (product) => {
     res = 1;
   }
   global.cart = cart;
-  console.log(global.cart);
   return res;
 };
 
@@ -60,6 +57,5 @@ export const removeProductFromCart = async (product) => {
     }
   }
   global.cart = newCart;
-  console.log(global.cart);
   return res;
 };

@@ -12,7 +12,7 @@ import {
   getAllCategories,
 } from "../../mongo";
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
-import Product from './AProduct';
+import AProduct from './AProduct';
 
 export default class Items extends React.Component {
   constructor(props) {
@@ -20,6 +20,8 @@ export default class Items extends React.Component {
     this.state = {
       items: null,
       categories: null,
+      show: false,
+      showItems: null,
     };
   }
 
@@ -32,10 +34,28 @@ export default class Items extends React.Component {
     }, 100);
   };
 
-  renderProductsNew = () => {
+  onChangeSearch = (search) => {
     let { items, categories } = this.state;
-    if (items && categories) {
-      items = items.slice(1, 10);
+    let showItems = [];
+    console.log(search.length);
+    if(search.length > 2 && items && categories) {
+      for(let i=0; i<items.length; ++i) {
+        console.log(items[i].title.includes(search));
+
+        if(items[i].title.toLowerCase().includes(search.toLowerCase())) {
+          showItems.push(items[i]);
+        }
+      }
+      this.setState({showItems, show: true});
+    } else if(search.length === 0){
+      this.setState({show: false});
+    }
+  }
+
+  renderProductsNew = () => {
+    let { showItems, categories, show, } = this.state;
+    let items = showItems;
+    if (items && categories && show) {
       return (
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -44,7 +64,7 @@ export default class Items extends React.Component {
           <Block flex>
             {items.map((item, key) => {
               return (
-                <Product
+                <AProduct
                   product={item}
                   key={key}
                   horizontal={true}
@@ -53,21 +73,21 @@ export default class Items extends React.Component {
               );
             })}
           </Block>
+          <Block style={{height: 500}}/>
         </ScrollView>
       );
     } else {
-      return (
-        <Block style={{backgroundColor:'red', justifyContent: "center", marginTop: 60}}>
-          <ActivityIndicator  size="large" color="black" />
-          <Text style={{fontSize: 25, textAlign: 'center', padding: 20,}}>{quote()}</Text>
-        </Block>
-      );
+      return (<Block/>);
     }
   };
 
   render() {
     return (
       <Block center style={styles.home}>
+        <Block style={{justifyContent: "center"}}>
+          <Text style={{textAlign:'center', padding: 5}}>SEARCH</Text>
+          <TextInput style={{backgroundColor: 'white', width: width* 0.8, padding: 20}} onChangeText={(text) => this.onChangeSearch(text)} />
+        </Block>
         {this.renderProductsNew()}
       </Block>
     );

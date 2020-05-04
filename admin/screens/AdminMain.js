@@ -14,7 +14,7 @@ import {
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 import ATabs from "../components/ATabs";
 
-export default class Home extends React.Component {
+export default class AdminMain extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -67,13 +67,13 @@ export default class Home extends React.Component {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.products}>
         <Block flex>
-          <Product product={products[0]} horizontal />
+          <ProductMain.js product={products[0]} horizontal />
           <Block flex row>
-            <Product product={products[1]} style={{ marginRight: theme.SIZES.BASE }} />
-            <Product product={products[2]} />
+            <ProductMain.js product={products[1]} style={{ marginRight: theme.SIZES.BASE }} />
+            <ProductMain.js product={products[2]} />
           </Block>
-          <Product product={products[3]} horizontal />
-          <Product product={products[4]} full />
+          <ProductMain.js product={products[3]} horizontal />
+          <ProductMain.js product={products[4]} full />
         </Block>
       </ScrollView>
     )

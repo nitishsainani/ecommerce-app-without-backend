@@ -1,6 +1,6 @@
 import React from 'react';
 import { withNavigation } from '@react-navigation/compat';
-import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
+import {StyleSheet, Dimensions, Image, TouchableWithoutFeedback, View} from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
 
 import materialTheme from '../../constants/Theme';
@@ -24,16 +24,25 @@ class Category extends React.Component {
     return (
       <Block row={horizontal} card flex style={[styles.product, styles.shadow, style]}>
         <TouchableWithoutFeedback onPress={() => {
-          global.product_navigation_param = category;
-          navigation.navigate('Products', { category });
+          if(category.in_stock) {
+            global.product_navigation_param = category;
+            navigation.navigate('Products', {category});
+          }
         }}>
           <Block flex style={[styles.imageContainer, styles.shadow]}>
+            {category.in_stock ? null : <View style={[styles.horizontalImage, styles.overlay]}>
+              <Text
+                style={{textAlign:'center', fontSize: 20, fontWeight: '500', }}
+              >OUT OF STOCK</Text>
+            </View>}
             {this.getImageObject()}
           </Block>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={() => {
-          global.product_navigation_param = category;
-          navigation.navigate('Products', { category });
+          if(category.in_stock) {
+            global.product_navigation_param = category;
+            navigation.navigate('Products', {category});
+          }
         }}>
           <Block flex space="between" style={styles.productDescription}>
             <Text size={14} style={styles.productTitle}>{category.title}</Text>
@@ -47,6 +56,15 @@ class Category extends React.Component {
 export default withNavigation(Category);
 
 const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex:10,
+    backgroundColor: 'rgba(255,255,255, 0.7)',
+  },
   product: {
     backgroundColor: theme.COLORS.WHITE,
     marginVertical: theme.SIZES.BASE,
@@ -54,13 +72,15 @@ const styles = StyleSheet.create({
     minHeight: 114,
   },
   productTitle: {
-    flex: 1,
     flexWrap: 'wrap',
     paddingBottom: 6,
-    fontSize: 30,
+    fontSize: 25,
     textAlign: 'center',
   },
   productDescription: {
+    justifyContent:'center',
+    alignItems: 'center',
+    flex: 1,
     padding: theme.SIZES.BASE / 2,
   },
   imageContainer: {
@@ -69,7 +89,6 @@ const styles = StyleSheet.create({
   image: {
     borderRadius: 3,
     marginHorizontal: theme.SIZES.BASE / 2,
-    marginTop: -16,
   },
   horizontalImage: {
     height: 150,

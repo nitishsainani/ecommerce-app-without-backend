@@ -44,7 +44,7 @@ export default class Home extends React.Component {
                 <Category
                   category={category}
                   key={key}
-                  full
+                  horizontal
                 />
               );
             })}
@@ -78,6 +78,14 @@ const styles = StyleSheet.create({
     width: width - theme.SIZES.BASE * 2,
     paddingVertical: theme.SIZES.BASE * 2,
   },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.2)'
+  },
 });
 
 /* This is static rendering of products
@@ -87,13 +95,13 @@ const styles = StyleSheet.create({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.products}>
         <Block flex>
-          <Product product={products[0]} horizontal />
+          <ProductMain.js product={products[0]} horizontal />
           <Block flex row>
-            <Product product={products[1]} style={{ marginRight: theme.SIZES.BASE }} />
-            <Product product={products[2]} />
+            <ProductMain.js product={products[1]} style={{ marginRight: theme.SIZES.BASE }} />
+            <ProductMain.js product={products[2]} />
           </Block>
-          <Product product={products[3]} horizontal />
-          <Product product={products[4]} full />
+          <ProductMain.js product={products[3]} horizontal />
+          <ProductMain.js product={products[4]} full />
         </Block>
       </ScrollView>
     )
