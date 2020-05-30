@@ -13,11 +13,12 @@ import {
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 import Category from './ACategory';
 
-export default class Items extends React.Component {
+export default class Categories extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       categories: null,
+      newShow: false,
     };
   }
 
@@ -27,7 +28,7 @@ export default class Items extends React.Component {
     }, 100);
   };
 
-  renderProductsNew = () => {
+  renderCategories = () => {
     let { categories } = this.state;
     if (categories) {
       return (
@@ -42,6 +43,7 @@ export default class Items extends React.Component {
                   category={category}
                   key={key}
                   horizontal={true}
+                  onSaveNewCategory={this.props.goBack}
                 />
               );
             })}
@@ -59,10 +61,36 @@ export default class Items extends React.Component {
     }
   };
 
+  getNewView = () => {
+    return (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.products}
+      >
+        <Block flex>
+          <Category
+            category={{
+              title: "",
+              image: "",
+              priority: 0,
+              in_stock: true,
+            }}
+            horizontal={true}
+            new
+            onSaveNewCategory={this.props.goBack}
+          />
+        </Block>
+        <Block style={{height: 500}}/>
+      </ScrollView>
+    );
+  }
+
   render() {
+    let {newShow} = this.state;
     return (
       <Block center style={styles.home}>
-        {this.renderProductsNew()}
+        {newShow ? <Block/> : <Button onPress={() => this.setState({newShow: true, })}>INSERT NEW</Button>}
+        {newShow ? this.getNewView() : this.renderCategories()}
       </Block>
     );
   }

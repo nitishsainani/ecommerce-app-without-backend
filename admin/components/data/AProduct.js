@@ -10,8 +10,8 @@ import {
   insertNewProduct,
   insertManyNewProduct,
   getAllCategories,
-  updateProduct,
-} from "../../mongo"
+  updateProduct, insertNewEntry, updateCarousel, deleteEntry,
+} from "../../mongo";
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 import {
   Image,
@@ -51,7 +51,18 @@ export default class AProduct extends React.Component {
   };
 
   saveProduct = () => {
-    updateProduct(this.state.product);
+    if(this.props.new) {
+      insertNewEntry('items', this.state.product).then(id => {
+        if(id) {
+          let {product} = this.state;
+          product._id = id;
+          this.props.insertNew(product);
+        }
+      })
+    } else {
+      let product = this.state.product;
+      updateProduct(product);
+    }
   }
 
   changeImage = (res) => {
@@ -86,9 +97,10 @@ export default class AProduct extends React.Component {
     this.setState({product});
   }
 
-  changeCategory = (text) => {
+  changeCategory = (index) => {
+    console.log(this.props.categories[index]._id);
     let {product} = this.state;
-    product.category = text;
+    product.category = this.props.categories[index]._id;
     this.setState({product});
   }
 
@@ -98,9 +110,29 @@ export default class AProduct extends React.Component {
     this.setState({product});
   }
 
+  deleteProduct = () => {
+    if(this.props.new) {
+      this.props.deleteEntry();
+    } else {
+      deleteEntry('items', this.state.product._id).then((res) => {
+        if (res) {
+          this.props.deleteEntry(this.state.product._id);
+        }
+      })
+    }
+  }
+
+  // getCategory = (id) => {
+  //   const {categories} = this.props;
+  //   for (let i=0; i<categories.length; ++i) {
+  //     if(categories)
+  //   }
+  // }
+
   render() {
     const { navigation, horizontal, style, priceColor, categories } = this.props;
     const { showCategories, product } = this.state;
+
     return (
       <Block
         card
@@ -113,24 +145,24 @@ export default class AProduct extends React.Component {
           </Block>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback>
-          <Block>
+          <Block key={this.props.product}>
             <Text>Name</Text>
-            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changeName(text)} defaultValue={product.title}/>
+            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changeName(text)} key={this.state.product.title ? 'Loaded' : 'NotLoadeds'}  defaultValue={product.title}/>
             <Text>Image</Text>
             <TextInput onFocus={() => getImage(this.changeImage)} style={{padding: 10, borderWidth: 1}} defaultValue={product.image}/>
             <Text>Price</Text>
-            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changePrice(text)} defaultValue={product.price.toString()}/>
+            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changePrice(text)} keyboardType={'number-pad'} defaultValue={product.price.toString()}/>
             <Text>Show Priority</Text>
-            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changePriority(text)} defaultValue={product.show_priority.toString()}/>
+            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changePriority(text)} keyboardType={'number-pad'} defaultValue={product.show_priority.toString()}/>
             <Button onPress={()=> this.setState({showCategories: !showCategories})}>Select Category</Button>
             {showCategories ?
               <Picker
-                selectedValue={product.category}
-                onValueChange={(itemValue, i) => this.changeCategory(itemValue)}
+                selectedValue={product.category && product.category.toString()}
+                onValueChange={(itemValue, index) => this.changeCategory(index)}
               >
                 {categories.map((category, key) => {
                   return(
-                    <Picker.Item key={key} label={category.title} value={category.title}/>
+                    <Picker.Item key={key} label={category.title} value={category._id.toString()}/>
                   );
                 })}
               </Picker> :
@@ -143,6 +175,7 @@ export default class AProduct extends React.Component {
               value={!product.in_stock}
             />
             <Button color={'green'} onPress={this.saveProduct}>SAVE</Button>
+            <Button color={'red'} onPress={this.deleteProduct}>DELETE</Button>
           </Block>
         </TouchableWithoutFeedback>
       </Block>
@@ -171,7 +204,7 @@ const styles = StyleSheet.create({
   image: {
     borderRadius: 3,
     marginHorizontal: theme.SIZES.BASE / 2,
-    marginTop: -16,
+    marginTop: 0
   },
   horizontalImage: {
     height: 130,

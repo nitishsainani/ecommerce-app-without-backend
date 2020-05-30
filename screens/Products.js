@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions, ScrollView, ActivityIndicator } from "react-native";
+import { StyleSheet, Dimensions, ScrollView, ActivityIndicator, TextInput } from "react-native";
 import { Button, Block, Text, Input, theme } from "galio-framework";
 
 import { Icon, Product } from "../components";
@@ -24,13 +24,15 @@ export default class Products extends React.Component {
   setCategoryItems = (items, category) => {
     if(!category) {
       this.setState({
+        search: true,
+        showItems: [],
         items,
       })
     ////////////FOR TOP SELLLING
-    } else if (category === 'top_selling'){
+    } else if (category.title === 'top_selling'){
       let newItems = [];
       items.forEach((item) => {
-        if(item.show_priority === 10) {
+        if(!item.category) {
           newItems.push(item);
         }
       })
@@ -39,9 +41,10 @@ export default class Products extends React.Component {
       })
     /////////// FOR CATEGORY ITEMS
     } else {
+      console.log("in comparison");
       var newItems = [];
       items.forEach((item) => {
-        if(item.category == category) {
+        if(item.category && category._id && item.category.equals(category._id)) {
           newItems.push(item);
         }
       })
@@ -54,7 +57,8 @@ export default class Products extends React.Component {
   componentDidMount = () => {
     console.log(global.product_navigation_param);
     
-    var category = global.product_navigation_param && global.product_navigation_param.title;
+    var category = global.product_navigation_param;
+    console.log(category);
     global.product_navigation_param = null;
     var timeoutTime;
     if(!category) {
@@ -67,27 +71,57 @@ export default class Products extends React.Component {
     }, timeoutTime);
   };
 
+  onChangeSearch = (search) => {
+    let { items } = this.state;
+    let showItems = [];
+    if(search.length > 1 && items) {
+      for(let i=0; i<items.length; ++i) {
+        if(items[i].title.toLowerCase().includes(search.toLowerCase())) {
+          showItems.push(items[i]);
+        }
+      }
+      this.setState({showItems});
+    } else if(search.length <= 1){
+      this.setState({showItems: []});
+    }
+  }
+
   renderProductsNew = () => {
-    const { items } = this.state;
+    let { items, search, showItems } = this.state;
     if (items) {
+      if(search) {
+        items = showItems;
+      }
       return (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.products}
-        >
-          <Block flex>
-            {items.map((item, key) => {
-              return (
-                <Product
-                  product={item}
-                  key={key}
-                  horizontal={item.full_size ? false : true}
-                  full={item.full_size ? true : false}
-                />
-              );
-            })}
-          </Block>
-        </ScrollView>
+        <Block>
+          {search ?
+            <Input
+              right
+              color="black"
+              style={styles.search}
+              placeholder="What are you looking for?"
+              onChangeText={this.onChangeSearch}
+              iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="magnifying-glass" family="entypo" />}
+            />:
+          <Block/>}
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.products}
+          >
+            <Block flex>
+              {items.map((item, key) => {
+                return (
+                  <Product
+                    product={item}
+                    key={key}
+                    horizontal={!item.full_size}
+                    full={!!item.full_size}
+                  />
+                );
+              })}
+            </Block>
+          </ScrollView>
+        </Block>
       );
     } else {
       return (
@@ -115,6 +149,11 @@ const styles = StyleSheet.create({
   products: {
     width: width - theme.SIZES.BASE * 2,
     paddingVertical: theme.SIZES.BASE * 2,
+  },
+  search: {
+    height: 48,
+    borderWidth: 1,
+    borderRadius: 3,
   },
 });
 

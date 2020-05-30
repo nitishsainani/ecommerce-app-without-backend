@@ -8,8 +8,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { Button, Block, Text, theme } from "galio-framework";
-import { Icon, Product, Category } from "../../components";
+
 import { quote } from '../../constants';
 const { height, width } = Dimensions.get("screen");
 import {
@@ -23,10 +22,10 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import Animated from 'react-native-reanimated';
 import Data from "./data/Data";
 import { getImage } from "../image/imagePick";
-
+import Carousel from './carousel/Carousel'
 
 const OrdersRoute = () => (
-  <View style={[styles.container, { backgroundColor: '#ff4081' }]} />
+  <Carousel/>
 );
 
 const DataRoute = () => (

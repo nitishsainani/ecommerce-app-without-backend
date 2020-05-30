@@ -373,9 +373,6 @@ const styles = StyleSheet.create({
   inputTheme: {
     borderBottomColor: materialTheme.COLORS.PRIMARY,
   },
-  inputTheme: {
-    borderBottomColor: materialTheme.COLORS.PRIMARY,
-  },
   inputInfo: {
     borderBottomColor: materialTheme.COLORS.INFO,
   },

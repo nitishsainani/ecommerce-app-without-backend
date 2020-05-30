@@ -11,7 +11,7 @@ export default class Onboarding extends React.Component {
   componentDidMount = () => {
     setTimeout(()=>{
       this.props.navigation.navigate('App');
-    }, 500);
+    }, 1000);
   }
 
   render() {

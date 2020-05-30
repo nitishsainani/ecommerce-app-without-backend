@@ -3,7 +3,7 @@ import {withNavigation} from "@react-navigation/compat";
 import {Dimensions, Image, StyleSheet, TouchableWithoutFeedback,View} from "react-native";
 import {Block, Text, theme} from "galio-framework";
 import {addProductToCart, getCountFromCart, removeProductFromCart,} from "../../services/cartHandle";
-import Icon from "../Icon";
+import { Icon } from 'galio-framework';
 
 const {width} = Dimensions.get("screen");
 
@@ -67,6 +67,67 @@ class Product extends React.Component {
     this.props.onChangeProduct && this.props.onChangeProduct();
   };
 
+  getZeroCountView = () => {
+    const {navigation, product, horizontal, style, priceColor} = this.props;
+    return(
+      <Block
+        row={true}
+        style={{flex: 1, flexDirection: "row-reverse"}}
+      >
+        <TouchableWithoutFeedback onPress={() => this.addToCart(product)}>
+          <Block style={{height: 20, width: 20, justifyContent: 'center', alignItems:'center', }}>
+            <Icon color={'grey'} family="AntDesign" size={15} name="pluscircleo"/>
+          </Block>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback>
+          <Block style={{height: 15, width: 'auto'}}>
+            <Text
+              style={{textAlign: 'center'}}
+              size={15}
+              muted={!priceColor}
+              color={priceColor}
+            >
+              Add
+            </Text>
+          </Block>
+        </TouchableWithoutFeedback>
+      </Block>
+    );
+  }
+
+  getNonZeroCountView = () => {
+    const {navigation, product, horizontal, style, priceColor} = this.props;
+    return(
+      <Block
+        row={true}
+        style={{flex: 1, flexDirection: "row-reverse"}}
+      >
+        <TouchableWithoutFeedback onPress={() => this.addToCart(product)}>
+          <Block style={{height: 20, width: 20, justifyContent: 'center', alignItems:'center',}}>
+            <Icon color={'grey'} family="AntDesign" size={15} name="pluscircleo"/>
+          </Block>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback>
+          <Block style={{height: 15, width: 25}}>
+            <Text
+              style={{textAlign: 'center'}}
+              size={15}
+              muted={!priceColor}
+              color={priceColor}
+            >
+              {this.state.count}
+            </Text>
+          </Block>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={() => this.removeFromCart(product)}>
+          <Block style={{height: 20, width: 20, justifyContent: 'center', alignItems:'center', }}>
+            <Icon color={'grey'} family="AntDesign" size={15} name="minuscircleo"/>
+          </Block>
+        </TouchableWithoutFeedback>
+      </Block>
+    );
+  }
+
   render() {
     const {navigation, product, horizontal, style, priceColor} = this.props;
 
@@ -82,7 +143,7 @@ class Product extends React.Component {
             <Block flex style={[styles.imageContainer, styles.shadow]}>
               {product.in_stock ? null : <View style={[styles.horizontalImage, styles.overlay]}>
                 <Text
-                  style={{textAlign:'center', fontSize: 20, fontWeight: '500', marginTop: 50, }}
+                  style={{textAlign:'center', fontSize: 20, fontWeight: '700', marginTop: 40, padding: 10}}
                 >OUT OF STOCK</Text>
               </View>}
               {this.getImageObject()}
@@ -90,50 +151,25 @@ class Product extends React.Component {
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback>
             <Block flex space="between" style={styles.productDescription}>
-              <Text size={20} style={styles.productTitle}>
+              <Text size={15} style={styles.productTitle}>
                 {product.title}
               </Text>
               <Block row={true}>
                 <Text
                   style={{marginRight: 20}}
-                  size={25}
+                  size={15}
                   muted={!priceColor}
                   color={priceColor}
                 >
                   ₹{product.price}
                 </Text>
-                <Block
-                  row={true}
-                  style={{flex: 1, flexDirection: "row-reverse"}}
-                >
-                  <TouchableWithoutFeedback onPress={() => this.addToCart(product)}>
-                    <Block style={{height: 30, width: 25}}>
-                      <Icon family="AntDesign" size={25} name="pluscircleo"/>
-                    </Block>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback>
-                    <Block style={{height: 30, width: 35}}>
-                      <Text
-                        style={{textAlign: 'center'}}
-                        size={25}
-                        muted={!priceColor}
-                        color={priceColor}
-                      >
-                        {this.state.count}
-                      </Text>
-                    </Block>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback onPress={() => this.removeFromCart(product)}>
-                    <Block style={{height: 30, width: 25}}>
-                      <Icon family="AntDesign" size={25} name="minuscircleo"/>
-                    </Block>
-                  </TouchableWithoutFeedback>
-                </Block>
+                {this.state.count === 0 ?
+                this.getZeroCountView() :
+                this.getNonZeroCountView()}
               </Block>
             </Block>
           </TouchableWithoutFeedback>
         </Block>
-
     );
   }
 }
@@ -170,7 +206,7 @@ const styles = StyleSheet.create({
   image: {
     borderRadius: 3,
     marginHorizontal: theme.SIZES.BASE / 2,
-    marginTop: -16,
+    marginTop: 0,
   },
   horizontalImage: {
     height: 122,

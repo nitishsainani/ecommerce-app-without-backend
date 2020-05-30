@@ -32,7 +32,7 @@ class Category extends React.Component {
           <Block flex style={[styles.imageContainer, styles.shadow]}>
             {category.in_stock ? null : <View style={[styles.horizontalImage, styles.overlay]}>
               <Text
-                style={{textAlign:'center', fontSize: 20, fontWeight: '500', }}
+                style={{textAlign:'center', fontSize: 20, fontWeight: '700', marginTop: 40, padding: 10}}
               >OUT OF STOCK</Text>
             </View>}
             {this.getImageObject()}
@@ -45,7 +45,7 @@ class Category extends React.Component {
           }
         }}>
           <Block flex space="between" style={styles.productDescription}>
-            <Text size={14} style={styles.productTitle}>{category.title}</Text>
+            <Text size={14} style={styles.productTitle}>{category.title.toUpperCase()}</Text>
           </Block>
         </TouchableWithoutFeedback>
       </Block>
@@ -67,19 +67,19 @@ const styles = StyleSheet.create({
   },
   product: {
     backgroundColor: theme.COLORS.WHITE,
-    marginVertical: theme.SIZES.BASE,
+    marginVertical: theme.SIZES.BASE / 2.5,
     borderWidth: 0,
     minHeight: 114,
   },
   productTitle: {
     flexWrap: 'wrap',
     paddingBottom: 6,
-    fontSize: 25,
-    textAlign: 'center',
+    fontSize: 15,
+    textAlign: 'left',
+    color: 'red',
   },
   productDescription: {
     justifyContent:'center',
-    alignItems: 'center',
     flex: 1,
     padding: theme.SIZES.BASE / 2,
   },
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   shadow: {
     shadowColor: theme.COLORS.BLACK,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 1, height: 2 },
     shadowRadius: 4,
     shadowOpacity: 0.1,
     elevation: 2,

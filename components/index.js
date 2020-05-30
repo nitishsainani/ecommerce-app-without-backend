@@ -6,6 +6,7 @@ import Drawer from './Drawer';
 import Header from './Header';
 import Switch from './Switch';
 import Category from './categories/Category'
+import HomeCarousel from "./HomeCarousel";
 
 export {
   Button,
@@ -16,4 +17,5 @@ export {
   Header,
   Switch,
   Category,
+  HomeCarousel
 };

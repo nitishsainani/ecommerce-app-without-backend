@@ -6,7 +6,7 @@ import { Icon, Product, Category } from "../../../components";
 import { quote } from '../../../constants';
 const { width } = Dimensions.get("screen");
 
-import { test } from "../../Telegram";
+import { test } from "../../mongo";
 
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 import Items from "./items";
@@ -40,7 +40,7 @@ export default class Data extends React.Component {
       return (
         <Block>
           <Button onPress={() => this.setState({categories: false})}>Back</Button>
-          <Categories/>
+          <Categories goBack={() => this.setState({categories: false})}/>
         </Block>
       );
     } else if (options) {

@@ -6,6 +6,8 @@ import { quote } from '../../../constants';
 const { width } = Dimensions.get("screen");
 import {
   updateCategory,
+  insertNewEntry,
+  deleteEntry,
 } from "../../mongo"
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 import {
@@ -45,7 +47,23 @@ export default class Category extends React.Component {
   };
 
   saveCategory = () => {
-    updateCategory(this.state.category);
+    if(!this.props.new) {
+      updateCategory(this.state.category);
+    } else {
+      insertNewEntry('categories', this.state.category).then(res => {
+        if(res) {
+          this.props.onSaveNewCategory();
+        }
+      });
+    }
+  }
+
+  deleteCategory = () => {
+    deleteEntry('categories', this.state.category._id).then(res => {
+      if(res) {
+        this.props.onSaveNewCategory();
+      }
+    });
   }
 
   changeImage = (res) => {
@@ -104,7 +122,7 @@ export default class Category extends React.Component {
             <Text>Image</Text>
             <TextInput onFocus={() => getImage(this.changeImage)} style={{padding: 10, borderWidth: 1}} defaultValue={category.image}/>
             <Text>Show Priority</Text>
-            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changePriority(text)} defaultValue={category.priority.toString()}/>
+            <TextInput style={{padding: 10, borderWidth: 1}} onChangeText={text => this.changePriority(text)} keyboardType={'number-pad'} defaultValue={category.priority.toString()}/>
             <Text style={{marginTop: 10}}>Disabled</Text>
             <Switch
               trackColor={{ false: "#767577", true: "green" }}
@@ -113,6 +131,7 @@ export default class Category extends React.Component {
               value={!category.in_stock}
             />
             <Button color={'green'} onPress={this.saveCategory}>SAVE</Button>
+            <Button color={'red'} onPress={this.deleteCategory}>DELETE</Button>
           </Block>
         </TouchableWithoutFeedback>
       </Block>

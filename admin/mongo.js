@@ -3,41 +3,94 @@ import {
   AnonymousCredential,
   RemoteMongoClient,
 } from "mongodb-stitch-react-native-sdk";
-
+import {getTable as getTableFromDb} from "../mongo/db";
 import { APP_ID } from "../mongo/credentials";
 import { CONSTANTS } from "../constants/database";
+import {get} from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import {Alert} from "react-native";
 
 ////////TEST query
 
-export const test = () => {
-  console.log("TEST")
-  console.log("TEST")
-  console.log("TEST")
-  console.log("TEST")
+export const test = async () => {
+  let categories = await getTable('categories');
+  for(let i=0; i< categories.length; ++i) {
+    const stitchAppClient = Stitch.defaultAppClient;
+    const mongoClient = stitchAppClient.getServiceClient(
+      RemoteMongoClient.factory,
+      CONSTANTS.FACTORY_NAME
+    );
+    const db = mongoClient.db(CONSTANTS.DB_NAME);
+    const itemsCollection = db.collection('items');
+    const query = {"category": categories[i].title}
+    const update = {"$set": {"category": categories[i]._id}};
+    const options = {"upsert": false}
 
+    itemsCollection.updateMany(query, update, options)
+      .then(result => {
+        const {matchedCount, modifiedCount} = result;
+        console.log(result);
+      })
+      .catch(err => console.error(`Failed to update items: ${err}`))
+  }
+
+}
+///////// DELETION Queries
+
+export const deleteEntry = async (tableName, id) => {
   const stitchAppClient = Stitch.defaultAppClient;
   const mongoClient = stitchAppClient.getServiceClient(
     RemoteMongoClient.factory,
     CONSTANTS.FACTORY_NAME
   );
   const db = mongoClient.db(CONSTANTS.DB_NAME);
+  const itemsCollection = db.collection(tableName);
 
-  const itemsCollection = db.collection(CONSTANTS.TABLE.ITEMS);
-  const update = {
-    "$set": {'in_stock': true}
-  };
-  const options = { "upsert": false }
-  itemsCollection.updateMany({}, update, options)
+  const query = { "_id": id };
+
+  return await itemsCollection.deleteOne(query)
     .then(result => {
-      const { matchedCount, modifiedCount } = result;
-      console.log(`Successfully matched ${matchedCount} and modified ${modifiedCount} items.`)
+      return true;
     })
-    .catch(err => console.error(`Failed to update items: ${err}`))
+    .catch(err => {
+      return false;
+    })
 }
 
 
 //////// UPDATING QUERIES
-export const updateCategory = (category) => {
+
+export const updateOptions = (options_) => {
+  let options = Object.assign({}, options_);
+  const stitchAppClient = Stitch.defaultAppClient;
+  const mongoClient = stitchAppClient.getServiceClient(
+    RemoteMongoClient.factory,
+    CONSTANTS.FACTORY_NAME
+  );
+  const db = mongoClient.db(CONSTANTS.DB_NAME);
+  const itemsCollection = db.collection(CONSTANTS.TABLE.CONTENT_VALUES);
+  const query = { "_id": options._id };
+  delete options['_id'];
+  const update = {
+    "$set": options
+  };
+  const query_options = { "upsert": false };
+  itemsCollection.updateOne(query, update, query_options)
+    .then(result => {
+      const { matchedCount, modifiedCount } = result;
+      if(matchedCount && modifiedCount) {
+        console.log(`Successfully updated the item.`)
+      }
+    })
+    .catch(err => console.error(`Failed to update the item: ${err}`))
+};
+
+
+export const getTable = async (table) => {
+  return await getTableFromDb(table);
+}
+
+export const updateCategory = (category_) => {
+  let category = Object.assign({}, category_);
   const stitchAppClient = Stitch.defaultAppClient;
   const mongoClient = stitchAppClient.getServiceClient(
     RemoteMongoClient.factory,
@@ -61,8 +114,32 @@ export const updateCategory = (category) => {
     .catch(err => console.error(`Failed to update the item: ${err}`))
 };
 
+export const updateCarousel = (item_to_update) => {
+  let item = Object.assign({}, item_to_update);
+  const stitchAppClient = Stitch.defaultAppClient;
+  const mongoClient = stitchAppClient.getServiceClient(
+    RemoteMongoClient.factory,
+    CONSTANTS.FACTORY_NAME
+  );
+  const db = mongoClient.db(CONSTANTS.DB_NAME);
+  const itemsCollection = db.collection(CONSTANTS.TABLE.CAROUSEL);
+  const query = { "_id": item._id };
+  delete item['_id'];
+  const update = {
+    "$set": item
+  };
+  const options = { "upsert": false };
+  itemsCollection.updateOne(query, update, options)
+    .then(result => {
+      const { matchedCount, modifiedCount } = result;
+      if(matchedCount && modifiedCount) {
+        console.log(`Successfully updated the item.`)
+      }
+    })
+}
 
-export const updateProduct = (item) => {
+export const updateProduct = (item_to_update) => {
+  let item = Object.assign({}, item_to_update);
   const stitchAppClient = Stitch.defaultAppClient;
   const mongoClient = stitchAppClient.getServiceClient(
     RemoteMongoClient.factory,
@@ -150,6 +227,24 @@ export const getAllCategories = async () => {
 
 
 ///// INSERTION QUERIES
+export const insertNewEntry = async (tableName, item) => {
+  console.log(item);
+  const stitchAppClient = Stitch.defaultAppClient;
+  const mongoClient = stitchAppClient.getServiceClient(
+    RemoteMongoClient.factory,
+    CONSTANTS.FACTORY_NAME
+  );
+
+  const db = mongoClient.db(CONSTANTS.DB_NAME);
+  const itemsCollection = db.collection(tableName);
+
+  return await itemsCollection.insertOne(item).then((res) => {
+    return res.insertedId;
+  }).catch((err) => {
+    return false;
+  });
+}
+
 export const insertNewProduct = async (item) => {
   console.log("inserting data...");
 

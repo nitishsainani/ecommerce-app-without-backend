@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ScrollView,
   Alert,
+  Clipboard
 } from "react-native";
 import { Block, Button, Text, theme } from "galio-framework";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,7 +18,7 @@ import { getCartProducts, emptyCart } from "../services/cartHandle";
 const { height, width } = Dimensions.get("screen");
 import { Images, materialTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
-import { getMinOrderValue, insertOrder } from "../mongo/db";
+import { getOptions, insertOrder } from "../mongo/db";
 import t from "tcomb-form-native";
 import { sendMessage } from "../admin/Telegram";
 
@@ -27,13 +28,19 @@ export default class Pro extends React.Component {
     this.state = {
       items: null,
       total: 0,
+      totalCart: 0,
       buttonText: "Next",
       addressState: false,
+      options: null,
+      showPayment: false,
     };
   }
 
   generateOrderMessage = (values, items, totalPrice) => {
-    let OrderString = '';
+    let {options} = this.state;
+    let freeDelivery = totalPrice >= options.free_delivery_value;
+    totalPrice = freeDelivery ? totalPrice : totalPrice+options.delivery_charge;
+    let OrderString = "";
     OrderString += 'NEW ORDER GENERATED\n';
     OrderString += '=====================\n';
     OrderString += 'NAME: ' + values.name + '\n';
@@ -56,6 +63,9 @@ export default class Pro extends React.Component {
     OrderString += '=====================\n';
     OrderString += 'TOTAL COUNT OF ITEMS\n';
     OrderString += totalCount + '\n';
+    OrderString += '=====================\n';
+    OrderString += 'Delivery Charge\n';
+    OrderString += (freeDelivery ? '0' : options.delivery_charge.toString()) + '\n';
     OrderString += '=====================\n';
     OrderString += 'TOTAL AMOUNT\n';
     OrderString += totalPrice + '\n';
@@ -96,7 +106,7 @@ export default class Pro extends React.Component {
       return false;
     }
     try {
-      if (values.phone.toString().length != 10) throw "";
+      if (values.phone.toString().length !== 10) throw "";
       if (parseInt(values.phone.toString()[0], 10) < 6) throw "";
     } catch(err) {
       Alert.alert(
@@ -126,8 +136,9 @@ export default class Pro extends React.Component {
             [{ text: "Great", onPress: () => console.log("OK Pressed") }]
           );
           emptyCart().then(r => {});
-          sendMessage(this.generateOrderMessage(values, this.state.items, this.state.total)).then(r => {})
-          this.props.navigation.navigate('Home');
+          sendMessage(this.generateOrderMessage(values, this.state.items, this.state.totalCart)).then(r => {
+            this.setState({showPayment: true})
+          })
         } else {
           Alert.alert(
             "Failure",
@@ -139,32 +150,33 @@ export default class Pro extends React.Component {
     }
   };
 
-  goToFormStep = () => {
-    getMinOrderValue().then((min_order_value) => {
-      if (this.state.total < min_order_value) {
-        Alert.alert(
-          "Order Amount",
-          "Sorry, We cannot accept order less than " + min_order_value,
-          [{ text: "I Understand", onPress: () => console.log("OK Pressed") }]
-        );
-      } else {
-        this.setState({
-          addressState: true,
-          buttonText: 'Place Order',
-        });
-      }
-    });
+  goToAddressFormStep = () => {
+    let {options} = this.state;
+    if(!options) return;
+    if (this.state.totalCart + options.delivery_charge < options.min_order_value) {
+      Alert.alert(
+        "Order Amount",
+        "Sorry, We cannot accept order less than " + (options.min_order_value),
+        [{ text: "I Understand", onPress: () => console.log("OK Pressed") }]
+      );
+    } else {
+      this.setState({
+        addressState: true,
+        buttonText: 'Place Order',
+      });
+    }
   };
 
   handleButton = () => {
     if (this.state.addressState) {
       this.placeOrder();
     } else {
-      this.goToFormStep();
+      this.goToAddressFormStep();
     }
   };
 
   calculateTotal = () => {
+    console.log('heress')
     var { items } = this.state;
     if (!items) {
       return;
@@ -174,20 +186,30 @@ export default class Pro extends React.Component {
       total += item.price * item.count;
     });
     this.setState({
-      total,
+      totalCart: total,
     });
   };
 
   setProductsFromCart = () => {
     setTimeout(() => {
       getCartProducts()
-        .then((items) => this.setState({ items }))
+        .then((items) => {
+          if(!items || (items && items.length === 0)) {
+            this.setState({noItems: true, })
+          } else {
+            this.setState({items, })
+          }
+        })
         .then(() => this.calculateTotal());
     }, 100);
   };
 
   componentDidMount = () => {
     this.setProductsFromCart();
+    getOptions().then(options => {
+      console.log(options);
+      this.setState({options, showPayment: false})
+    })
   };
 
   renderCartProducts = () => {
@@ -251,15 +273,62 @@ export default class Pro extends React.Component {
     );
   };
 
+  getDeliveryView = () => {
+    let {options, totalCart} = this.state;
+    if(totalCart >= options.free_delivery_value) {
+      return (
+        <Block flex style={{paddingLeft: 30, paddingVertical: 10, }}>
+          <Text style={{fontSize: 20, color: 'green'}}>{"Your order is eligible for FREE Delivery"}</Text>
+        </Block>
+      )
+    } else {
+      return (
+        <Block flex style={{paddingLeft: 30, paddingVertical: 10}}>
+          <Text style={{fontSize: 20}}>{"Delivery Charges: ₹" + options.delivery_charge}</Text>
+          <Text style={{fontSize: 16}}>
+            {"Get FREE Delivery on orders above "}
+            <Text style={{color: 'red', }}>₹{options.free_delivery_value}</Text>
+          </Text>
+        </Block>
+      );
+    }
+  }
+
+  getPaymentView = () => {
+    console.log('Here');
+    // await Clipboard.setString(this.state.text);
+    let {options} = this.state;
+    let payment_image = options.payment_image;
+    let mobile = options.payment_mobile;
+    return(
+      <Block style={{padding: 20, alignItems: 'center', marginTop: 100}}>
+        <Image source={{ uri: payment_image }} style={{resizeMode: 'stretch', width: 300, height: 100, alignItems: 'center', justifyContent: 'center'}} />
+        <Text style={{textAlign: 'center', fontSize: 20}}>Pay Through PayTM for fast delivery.</Text>
+        <Button onPress={() => {Clipboard.setString(mobile);}} style={{textAlign: 'center', fontSize: 20, marginTop: 20}}>{'COPY MOBILE NUMBER'}</Button>
+        <Text style={{textAlign: 'center', fontSize: 20, padding: 20}}>{mobile}</Text>
+        <Button onPress={() => {this.props.navigation.navigate('Home');}} style={{textAlign: 'center', fontSize: 20, marginTop: 20, backgroundColor: 'green'}}>{'DONE'}</Button>
+      </Block>
+    )
+  }
+
   render() {
+    let {options, totalCart, noItems, showPayment} = this.state;
+    if(!options) return <Block/>;
+    if(noItems) return <Text style={{padding: 100, textAlign: 'center', alignContent: 'center', marginTop: 100, fontSize: 20, color: 'grey'}} >NO ITEMS IN CART</Text>
+    // console.log(showPayment);
+    if(showPayment) {
+      return this.getPaymentView();
+    }
+    let total = totalCart >= options.free_delivery_value ? totalCart : totalCart + options.delivery_charge
     return (
       <Block flex>
         {this.state.addressState ? this.getFormView() : this.getProductsView()}
-        <Block style={{ height: 100 }} card>
-          <Block flex row={true} style={{ padding: 30 }}>
-            <Text style={{ fontSize: 30, width: width * 0.3 }}>TOTAL:</Text>
-            <Text style={{ fontSize: 30, width: width * 0.3 }}>
-              ₹{this.state.total}
+        <Block style={{ height: 150 }} card>
+          {this.getDeliveryView()}
+          <Block flex row={true} style={{ paddingHorizontal: 30, paddingBottom: 5 }}>
+            <Text style={{ fontSize: 25, width: width * 0.3 }}>TOTAL:</Text>
+            <Text style={{ fontSize: 25, width: width * 0.3 }}>
+              ₹{total}
             </Text>
             <Button
               shadowless

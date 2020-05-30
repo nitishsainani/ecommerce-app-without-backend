@@ -5,6 +5,7 @@ export const CONSTANTS = {
         ITEMS: 'items',
         CATEGORIES: 'categories',
         CONTENT_VALUES: 'content_values',
-        ORDERS: 'orders'
+        ORDERS: 'orders',
+        CAROUSEL: 'carousel',
     },
 }

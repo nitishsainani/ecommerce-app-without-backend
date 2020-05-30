@@ -114,14 +114,13 @@ class Header extends React.Component {
 
   renderSearch = () => {
     const { navigation } = this.props;
-    return;
     return (
       <Input
         right
         color="black"
         style={styles.search}
         placeholder="What are you looking for?"
-        // onFocus={() => navigation.navigate('Pro')}
+        onFocus={() => navigation.navigate('Products')}
         iconContent={<Icon size={16} color={theme.COLORS.MUTED} name="magnifying-glass" family="entypo" />}
       />
     )
@@ -140,8 +139,8 @@ class Header extends React.Component {
           </Button>
           <Button shadowless style={styles.tab} onPress={() => navigation.navigate('Products')}>
             <Block row middle>
-              <Icon size={16} name="camera-18" family="GalioExtra" style={{ paddingRight: 8 }} />
-              <Text size={16} style={styles.tabTitle}>{tabTitleRight || 'All Products'}</Text>
+              <Icon size={16} name="search1" family="AntDesign" style={{ paddingRight: 8 }} />
+              <Text size={16} style={styles.tabTitle}>{tabTitleRight || 'Search'}</Text>
             </Block>
           </Button>
         </Block>
@@ -150,14 +149,16 @@ class Header extends React.Component {
   }
 
   renderHeader = () => {
-    const { search, tabs } = this.props;
-    if (search || tabs) {
-      return (
-        <Block center>
-          {search ? this.renderSearch() : null}
-          {tabs ? this.renderTabs() : null}
-        </Block>
-      )
+    const { search, tabs, title } = this.props;
+    if(title !== 'Products') {
+      if (search || tabs) {
+        return (
+          <Block center>
+            {search ? this.renderSearch() : null}
+            {/*{tabs ? this.renderTabs() : null}*/}
+          </Block>
+        )
+      }
     }
     return null;
   }
@@ -175,7 +176,7 @@ class Header extends React.Component {
       <Block style={headerStyles}>
         <NavBar
           back={back}
-          title={title}
+          title={title == 'Home' ? 'Kalash Namkeen' : title}
           style={styles.navbar}
           onRightPress={()=> navigation.navigate('Pro')}
           transparent={transparent}
@@ -204,15 +205,17 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   title: {
+    textAlign: 'center',
     width: '100%',
     fontSize: 16,
     fontWeight: 'bold',
   },
   navbar: {
     paddingVertical: 0,
-    paddingBottom: theme.SIZES.BASE * 1.5,
+    paddingBottom: iPhoneX() ? theme.SIZES.BASE * 1.5 : theme.SIZES.BASE * 0.2,
     paddingTop: iPhoneX() ? theme.SIZES.BASE * 4 : theme.SIZES.BASE,
     zIndex: 5,
+    height: 50,
   },
   shadow: {
     backgroundColor: theme.COLORS.WHITE,
@@ -239,15 +242,15 @@ const styles = StyleSheet.create({
     borderRightColor: theme.COLORS.MUTED,
   },
   search: {
-    height: 48,
+    height: 40,
     width: width - 32,
-    marginHorizontal: 16,
     borderWidth: 1,
-    borderRadius: 3,
+    borderRadius: 25,
+    backgroundColor: '#e6e6e6',
   },
   tabs: {
     marginBottom: 24,
-    marginTop: 10,
+    marginTop: 2,
     elevation: 4,
   },
   tab: {

@@ -21,7 +21,7 @@ export default class Profile extends React.Component {
             imageStyle={styles.profileImage}>
             <Block flex style={styles.profileDetails}>
               <Block style={styles.profileTexts}>
-                <Text color="white" size={28} style={{ paddingBottom: 8 }}>Rachel Brown</Text>
+                <Text color="white" size={28} style={{ paddingBottom: 8 }}>KALASH NAMKEEN</Text>
                 <Block row space="between">
                   <Block row>
                     <Block middle style={styles.pro}>
@@ -35,7 +35,7 @@ export default class Profile extends React.Component {
                   <Block>
                     <Text color={theme.COLORS.MUTED} size={16}>
                       <Icon name="map-marker" family="font-awesome" color={theme.COLORS.MUTED} size={16} />
-                      {` `} Los Angeles, CA
+                      {` `} Manik Bagh Road
                       </Text>
                   </Block>
                 </Block>
@@ -48,16 +48,16 @@ export default class Profile extends React.Component {
           <ScrollView showsVerticalScrollIndicator={false}>
             <Block row space="between" style={{ padding: theme.SIZES.BASE, }}>
               <Block middle>
-                <Text bold size={12} style={{marginBottom: 8}}>36</Text>
+                <Text bold size={12} style={{marginBottom: 8}}>432141</Text>
                 <Text muted size={12}>Orders</Text>
               </Block>
               <Block middle>
-                <Text bold size={12} style={{marginBottom: 8}}>5</Text>
+                <Text bold size={12} style={{marginBottom: 8}}>6</Text>
                 <Text muted size={12}>Bids & Offers</Text>
               </Block>
               <Block middle>
-                <Text bold size={12} style={{marginBottom: 8}}>2</Text>
-                <Text muted size={12}>Messages</Text>
+                <Text bold size={12} style={{marginBottom: 8}}>1000+</Text>
+                <Text muted size={12}>Customers</Text>
               </Block>
             </Block>
             <Block row space="between" style={{ paddingVertical: 16, alignItems: 'baseline' }}>

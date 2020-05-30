@@ -13,6 +13,7 @@ import {
 } from "../../mongo";
 import { Stitch, AnonymousCredential } from "mongodb-stitch-react-native-sdk";
 import AProduct from './AProduct';
+import CarouselItem from "../carousel/CarouselItem";
 
 export default class Items extends React.Component {
   constructor(props) {
@@ -22,10 +23,12 @@ export default class Items extends React.Component {
       categories: null,
       show: false,
       showItems: null,
+      newShow: false,
     };
   }
 
   componentDidMount = () => {
+    this.setState({showItems: false});
     setTimeout(() => {
       getAllProducts().then(items => this.setState({items, }));
     }, 100);
@@ -34,61 +37,122 @@ export default class Items extends React.Component {
     }, 100);
   };
 
-  onChangeSearch = (search) => {
-    let { items, categories } = this.state;
-    let showItems = [];
-    console.log(search.length);
-    if(search.length > 2 && items && categories) {
-      for(let i=0; i<items.length; ++i) {
-        console.log(items[i].title.includes(search));
-
-        if(items[i].title.toLowerCase().includes(search.toLowerCase())) {
-          showItems.push(items[i]);
-        }
+  onClickSearch = () => {
+    this.setState({showItems: []}, () => {
+      let search = this.search;
+      if(search === "") {
+        return;
       }
-      this.setState({showItems, show: true});
-    } else if(search.length === 0){
-      this.setState({show: false});
-    }
+      let { items, categories } = this.state;
+      let showItems = [];
+      if(items && categories) {
+        for (let i = 0; i < items.length; ++i) {
+          if (items[i].title.toLowerCase().includes(search.toLowerCase())) {
+            showItems.push(items[i]);
+          }
+        }
+        this.setState({showItems, show: true});
+      }
+    });
+  }
+
+  onChangeSearch = (search) => {
+    this.search = search;
   }
 
   renderProductsNew = () => {
-    let { showItems, categories, show, } = this.state;
+    let { showItems, categories, show, newShow } = this.state;
     let items = showItems;
     if (items && categories && show) {
       return (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.products}
-        >
-          <Block flex>
-            {items.map((item, key) => {
-              return (
-                <AProduct
-                  product={item}
-                  key={key}
-                  horizontal={true}
-                  categories={categories}
-                />
-              );
-            })}
-          </Block>
-          <Block style={{height: 500}}/>
-        </ScrollView>
+        <Block>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.products}
+          >
+            <Block flex>
+              {items.map((item, key) => {
+                return (
+                  <AProduct
+                    product={item}
+                    key={key}
+                    horizontal={true}
+                    categories={categories}
+                    deleteEntry={this.deleteEntry}
+                  />
+                );
+              })}
+            </Block>
+            <Block style={{height: 700}}/>
+          </ScrollView>
+        </Block>
       );
     } else {
       return (<Block/>);
     }
   };
 
+  deleteEntry = (id) => {
+    let {items} = this.state;
+    let newItems = [];
+    for(let i=0; i<items.length; ++i) {
+      if(items[i]._id !== id) {
+        newItems.push(items[i]);
+      }
+    }
+    this.setState({items: newItems, showItems: []});
+  }
+
+  insertNew = (newItem) => {
+    let {items} = this.state;
+    items = [newItem].concat(items);
+    this.setState({items, newShow: false, showItems: null});
+  }
+
+  getNewView = () => {
+    return (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.products}
+      >
+        <Block flex>
+          <AProduct
+            product={{title: '', price:0, image: '', show_priority: 0, in_stock: true}}
+            full={true}
+            categories={this.state.categories}
+            deleteEntry={()=>{this.setState({newShow: false})}}
+            new
+            insertNew={this.insertNew}
+          />
+        </Block>
+        <Block height={700} />
+      </ScrollView>
+    );
+  }
+
   render() {
+    let {newShow, showItems} = this.state;
     return (
       <Block center style={styles.home}>
         <Block style={{justifyContent: "center"}}>
-          <Text style={{textAlign:'center', padding: 5}}>SEARCH</Text>
-          <TextInput style={{backgroundColor: 'white', width: width* 0.8, padding: 20}} onChangeText={(text) => this.onChangeSearch(text)} />
+          {showItems && newShow && false ? <Block/> :
+            <Block>
+              <Text style={{textAlign:'center', padding: 5}}>SEARCH</Text>
+              <TextInput style={{backgroundColor: 'white', width: width* 0.8, padding: 20}} onChangeText={(text) => this.onChangeSearch(text)} />
+              <Button style={{marginBottom: 20}} onPress={this.onClickSearch}>SEARCH</Button>
+              <Button onPress={() => {this.setState({newShow: true})}}>INSERT NEW</Button>
+            </Block>}
+          {newShow ?
+            this.getNewView(): null}
+            {/*<Button onPress={() => {this.setState({newShow: true})}}>INSERT NEW</Button>}*/}
         </Block>
-        {this.renderProductsNew()}
+        {newShow ?
+          <Block>
+            <Text style={{textAlign:'center', padding: 5}}>SEARCH</Text>
+            <TextInput style={{backgroundColor: 'white', width: width* 0.8, padding: 20}} onChangeText={(text) => this.onChangeSearch(text)} />
+            <Button style={{marginBottom: 20}} onPress={this.onClickSearch}>SEARCH</Button>
+          </Block> :
+          this.renderProductsNew()}
       </Block>
     );
   }

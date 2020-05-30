@@ -15,6 +15,7 @@ export var data = {
   items: null,
   categories: null,
   content_values: null,
+  carousel: null,
 }
 
 const _logIn = async () => {
@@ -56,11 +57,22 @@ export const getTable = async (tableName) => {
   const tasks = db.collection(tableName);
   return await tasks.find().asArray()
     .then((docs) => {
+      console.log(docs);
       return docs
     })
     .catch((err) => {
       console.warn(err);
     });
+}
+
+export const getCarousel = async () => {
+  if (!_checkLogin()) {
+    _logIn();
+  }
+  if(data.carousel == null) {
+    data.carousel = await getTable(CONSTANTS.TABLE.CAROUSEL);
+  }
+  return data.carousel;
 }
 
 export const getAllProducts = async () => {
@@ -110,7 +122,7 @@ export const getAllCategories = async () => {
     const tasks = db.collection(CONSTANTS.TABLE.CATEGORIES);
     const query = {};
     const options = {
-      "sort": { "in_stock": -1, "show_priority": -1 },
+      "sort": { "in_stock": -1, "priority": -1 },
     };
     data.categories = await tasks.find(query, options).asArray()
         .then((docs) => {
@@ -255,7 +267,7 @@ export const insertManyNewCategory = async (items) => {
 
 /////////GET constants
 
-export const getMinOrderValue = async () => {
+export const getOptions = async () => {
   if (TESTING) return test_content_values[0].min_order_value;
 
   if (!_checkLogin()) {
@@ -278,7 +290,7 @@ export const getMinOrderValue = async () => {
       console.warn(err);
     });
   }
-  return data.content_values[0].min_order_value;
+  return data.content_values[0];
 }
 
 
